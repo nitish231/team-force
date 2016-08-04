@@ -1,0 +1,138 @@
+<apex:page id="page" controller="DeleteComponentsClass">
+    
+    <apex:includeScript value="{!$Resource.jszip}"/>
+    
+    <script type="text/javascript">
+    	var compMap = {};
+    	
+    	function contentToMap(key,value) {
+            compMap[key] = compMap[key] || [];
+            compMap[key].push(value);
+        }
+    
+    	function getRemoteContent(){
+            
+            var keys = Object.keys(compMap);
+            
+            if(keys.length > 0){
+            	var packageXml = '<?xml version="1.0" encoding="UTF-8"?>' + 
+                	'<Package xmlns="http://soap.sforce.com/2006/04/metadata">' +
+            		'<version>35.0</version>' +
+            		'</Package>' ;
+        
+         		var destructiveChanges = '<?xml version="1.0" encoding="UTF-8"?>' + 
+            		'<Package xmlns="http://soap.sforce.com/2006/04/metadata">' ;
+            
+            	for(var i=0;i<keys.length;i++){
+                    
+                	destructiveChanges = destructiveChanges + '<types>';
+                    
+                	if(keys[i] == 'Dashboard' || keys[i] == 'Report' || keys[i] == 'EmailTemplate' ||keys[i] == 'Document'){
+                    	
+                        for(var j=0;j<compMap[keys[i]].length;j++) {
+                    		var items = compMap[keys[i]][j].split('/');
+                        	if((destructiveChanges.indexOf('<members>' + items[0] + '</members>') > -1) && (items[0] != 'unfiled$public')) {
+                            	destructiveChanges = destructiveChanges + '<members>'+items[0]+'</members>';
+                    		}
+                    		
+                            destructiveChanges = destructiveChanges + '<members>'+compMap[keys[i]][j]+'</members>';
+                		}
+                        
+            		} else {
+                        
+                    	for(var j=0;j<compMap[keys[i]].length;j++) {
+                    		destructiveChanges = destructiveChanges + '<members>'+compMap[keys[i]][j]+'</members>';
+                    	}
+                        
+            		}
+                    
+                	destructiveChanges = destructiveChanges + '<name>'+keys[i]+'</name>';
+            		destructiveChanges = destructiveChanges + '</types>';
+            	
+                }
+                
+            	destructiveChanges = destructiveChanges + '</Package>';
+            
+            	zipFile = new JSZip();
+            	zipFile.file('package.xml',packageXml,{base64: 'true'});
+            	zipFile.file('destructiveChanges.xml',destructiveChanges,{base64: 'true'});
+            	var data = zipFile.generate();
+                        
+            	Visualforce.remoting.Manager.invokeAction(
+                    
+                	'{!$RemoteAction.DeleteComponentsClass.getDeployContent}',
+                	data,
+                	function(result, event){
+                        
+                    	if (event.status) {
+
+                        } else {
+                        	alert("Error");
+                    	}
+                        
+                	});
+                } else {
+                    alert('Add Components');
+                }
+        }
+    
+    </script>
+    
+    <apex:form id="frm" >
+        
+        <apex:pageBlock id="pblck1" title="Delete Components">
+            
+            <apex:pageBlockSection id="pbSectn1" columns="4" showHeader="false">
+                <apex:outputLabel value="Component Type" for="picklistID" />
+                <apex:selectList id="picklistID" value="{!SelectedType}" title="Component Type" multiselect="false" size="1">
+                    <apex:selectOptions value="{!DataTypes}" />
+                </apex:selectList>
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockSection id="pbSectn2" columns="4" showHeader="false">
+                <apex:outputLabel value="Component" for="nameID" />
+                <apex:inputText id="componentName" value="{!ComponentName}" />
+            </apex:pageBlockSection>
+            
+            <apex:pageBlockButtons location="bottom">
+                <apex:commandButton action="{!add}" value=" Add "> </apex:commandButton>
+                <apex:commandButton onclick="getRemoteContent()" action="{!deleteItems}" value=" Delete "> </apex:commandButton>
+                <apex:commandButton action="{!cancel}" value=" Cancel "></apex:commandButton>
+            </apex:pageBlockButtons>
+            
+        </apex:pageBlock>
+        
+        <apex:pageBlock id="pblck2" >
+            
+            <table border='1'>
+                <tr style="background:#3498db;color:white">
+                    <th>Component Name</th><th>Component Type</th>
+                </tr>
+                
+                <apex:repeat id="itemId" value="{!componentItems}" var="item">
+                    <script>
+                    	contentToMap('{!item.compType}','{!item.compName}');
+                    </script>
+                    <tr>
+                        <td>{!item.compName}</td><td>{!item.compType}</td>
+                    </tr>
+                </apex:repeat>
+                
+            </table>
+            
+        </apex:pageBlock>
+        
+        <apex:pageBlock >
+            
+            <apex:pageBlockSection columns="1">
+                <span style="font-style:Italic">
+                    Note: Component is the Component Object Name. For Folder components like Dashboard, Document, EmailTemplate and Report, the Folder Name is added as prefix to the Component. For example my Dashboard folder is demoFolder and Dashboard is demoComponent, then the Component name is demoFolder/demoComponent.
+                    You can add more than one Component Name separated by semicolon(';').
+                </span>
+            </apex:pageBlockSection>
+            
+        </apex:pageBlock>
+        
+    </apex:form>
+    
+</apex:page>
