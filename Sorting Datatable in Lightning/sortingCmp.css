@@ -1,0 +1,26 @@
+.THIS .slds-page-header {
+    position: fixed;
+    z-index: 5;
+    background: #27ae60;
+    color: #fff;
+    width: 100%;
+    height: 65px;
+    font-size: 18px;
+    padding-top: 15px;
+    padding-left:25px;
+}
+
+.THIS .MyContent {
+    padding-left:20px;
+    padding-top:75px;
+    width: 90%;
+}
+
+.THIS .iconButton{
+    box-shadow: none;
+    font-weight: normal;
+}
+
+.THIS .iconSVGButton{
+    fill: white;
+}

@@ -1,0 +1,126 @@
+<aura:component access="global" controller="AccountClass" implements="force:appHostable,flexipage:availableForAllPageTypes">
+    
+	<ltng:require styles="/resource/slds0122/assets/styles/salesforce-lightning-design-system.min.css" />
+    <ltng:require scripts="/resource/lodash/lodash/lodash.js" />
+    
+    <aura:attribute name="accountItems" type="Account[]" />
+    <aura:attribute name="sort1" type="String" default="down" />
+    <aura:attribute name="sort2" type="String" default="down" />
+    <aura:attribute name="sort3" type="String" default="down" />
+    <aura:attribute name="sort4" type="String" default="down" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <div class="slds">
+		<div class="slds-page-header">
+			<div class="slds-grid">
+				<form class="slds-form--inline" style="padding-left:3px">
+					<div class="slds-form-element" style="margin-top:3px">
+						<div class="slds-col slds-has-flexi-truncate">
+							<h1 class="slds-text-heading--medium slds-truncate" title="Sorting">Sorting
+							</h1>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+        <div class="container slds-p-top--medium MyContent">
+            <form class="slds-form--stacked MyForm">
+                <div id="contentTable" class="slds-scrollable--x">
+                    <table class="slds-table slds-table--bordered slds-table--cell-buffer">
+                        <thead>
+                            <tr class="slds-text-heading--label" style="background-color: #27ae60">
+                                <th class="slds-size--3-of-12" scope="col" style="font-weight: 500;color: white;">
+                                    <div class="slds-grid slds-wrap">
+                                        <span class="slds-truncate" style="padding-top:3px">Name</span>
+                                        <div class="slds-icon_container" title="Sort Column">
+                                            <ui:button label="" class="slds-button slds-button--icon-bare iconButton" press="{!c.sortByName}">
+                                                <aura:if isTrue="{!v.sort1 == 'down'}">
+                                                    <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                           xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowdown">
+                                                    </c:svg>
+                                                    <aura:set attribute="else">
+                                                        <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                               xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowup">
+                                                        </c:svg>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </ui:button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="slds-size--3-of-12" scope="col" style="font-weight: 500;color: white;">
+                                    <div class="slds-grid slds-wrap">
+                                        <span class="slds-truncate" style="padding-top:3px">Billing City</span>
+                                        <div class="slds-icon_container" title="Sort Column">
+                                            <ui:button label="" class="slds-button slds-button--icon-bare iconButton" press="{!c.sortByCity}">
+                                                <aura:if isTrue="{!v.sort2 == 'down'}">
+                                                    <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                           xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowdown">
+                                                    </c:svg>
+                                                    <aura:set attribute="else">
+                                                        <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                               xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowup">
+                                                        </c:svg>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </ui:button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="slds-size--3-of-12" scope="col" style="font-weight: 500;color: white;">
+                                    <div class="slds-grid slds-wrap">
+                                        <span class="slds-truncate" style="padding-top:3px">Phone</span>
+                                        <div class="slds-icon_container" title="Sort Column">
+                                            <ui:button label="" class="slds-button slds-button--icon-bare iconButton" press="{!c.sortByPhone}">
+                                                <aura:if isTrue="{!v.sort3 == 'down'}">
+                                                    <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                           xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowdown">
+                                                    </c:svg>
+                                                    <aura:set attribute="else">
+                                                        <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                               xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowup">
+                                                        </c:svg>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </ui:button>
+                                        </div>
+                                    </div>
+                                </th>
+                                <th class="slds-size--3-of-12" scope="col" style="font-weight: 500;color: white;">
+                                    <div class="slds-grid slds-wrap">
+                                        <span class="slds-truncate" style="padding-top:3px">Annual Revenue</span>
+                                        <div class="slds-icon_container" title="Sort Column">
+                                            <ui:button label="" class="slds-button slds-button--icon-bare iconButton" press="{!c.sortByRevenue}">
+                                                <aura:if isTrue="{!v.sort4 == 'down'}">
+                                                    <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                           xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowdown">
+                                                    </c:svg>
+                                                    <aura:set attribute="else">
+                                                        <c:svg ariaHidden="true" class="slds-button__icon iconSVGButton"
+                                                               xlinkHref="/resource/slds0122/assets/icons/utility-sprite/svg/symbols.svg#arrowup">
+                                                        </c:svg>
+                                                    </aura:set>
+                                                </aura:if>
+                                            </ui:button>
+                                        </div>
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <aura:iteration items="{!v.accountItems}" var="Item" indexVar="index">
+                                <tr>
+                                    <td class="slds-size--3-of-12">{!Item.Name}</td>
+                                    <td class="slds-size--3-of-12">{!Item.BillingCity}</td>
+                                    <td class="slds-size--3-of-12">{!Item.Phone}</td>
+                                    <td class="slds-size--3-of-12">$ {!Item.AnnualRevenue}</td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</aura:component>
