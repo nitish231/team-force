@@ -54,26 +54,24 @@
             	destructiveChanges = destructiveChanges + '</Package>';
             
             	zipFile = new JSZip();
-            	zipFile.file('package.xml',packageXml,{base64: 'true'});
-            	zipFile.file('destructiveChanges.xml',destructiveChanges,{base64: 'true'});
-            	var data = zipFile.generate();
+            	zipFile.file('package.xml',packageXml);
+            	zipFile.file('destructiveChanges.xml',destructiveChanges);
+            	zipFile.generateAsync({type:"base64"}).then(function(data) {
+                    Visualforce.remoting.Manager.invokeAction(
+                        '{!$RemoteAction.DeleteComponentsClass.getDeployContent}',
+                        data,
                         
-            	Visualforce.remoting.Manager.invokeAction(
-                    
-                	'{!$RemoteAction.DeleteComponentsClass.getDeployContent}',
-                	data,
-                	function(result, event){
-                        
-                    	if (event.status) {
+                        function(result, event){
+                            if (event.status) {
 
-                        } else {
-                        	alert("Error");
-                    	}
-                        
-                	});
-                } else {
-                    alert('Add Components');
-                }
+                            } else {
+                                alert("Error");
+                            }
+                        });
+                });
+            } else {
+                alert('Add Components');
+            }
         }
     
     </script>
