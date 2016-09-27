@@ -1,0 +1,44 @@
+<apex:page controller="LookupPage1Controller" title="Child Page" showHeader="false">
+    <apex:form title="Child Page">
+        <apex:pageBlock title="Search">
+            <apex:pageBlockSection>
+                <apex:pageBlockSectionItem>
+                    <apex:inputText value="{!searchvalue}">
+                        <apex:actionSupport event="onkeyup" action="{!onkeyupAction}" reRender="one" />
+                        <apex:actionSupport event="onchange" action="{!onkeyupAction}" reRender="one" /></apex:inputText>
+                    <apex:commandButton value="Go" action="{!searchAction}" />
+                </apex:pageBlockSectionItem>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+    <apex:form title="Child Page" id="one">
+        <apex:pageBlock title="Details" rendered="{!render1}">
+            <apex:pageMessages></apex:pageMessages>
+            <apex:pageBlockTable value="{!Records}" var="record">
+                <apex:column headerValue="Book Name">
+                    <apex:outputLink value="#" onclick="fillIn('{!record.Name}','{!record.id}')">{!record.Name}</apex:outputLink>
+                </apex:column>
+                <apex:column value="{!record.author__c}" headerValue="Book Author" />
+                <apex:column value="{!record.price__c}" headerValue="Book Price" />
+            </apex:pageBlockTable>
+        </apex:pageBlock>
+    </apex:form>
+    function fillIn(name, id) { 
+    	var winMain=window.opener; 
+    	if (null==winMain) { 
+    		winMain=window.parent.opener; 
+    	} 
+    	var ele=winMain.document.getElementById('{!$CurrentPage.parameters.namefield}'); 
+    	ele.value=name; 
+    	ele=winMain.document.getElementById('{!$CurrentPage.parameters.idfield}'); 
+    	ele.value=id; 
+    	winMain.closeLookupPopup(); 
+    } 
+    function CloseWindow() { 
+    	var winMain=window.opener; 
+    	if (null==winMain) { 
+    		winMain=window.parent.opener; 
+    	} 
+    	winMain.closeLookupPopup(); 
+    }
+</apex:page>
