@@ -8,9 +8,9 @@
     <script type="text/javascript">
     <!--loads the visualization in gant chart view-->
           google.charts.load('current', { 'packages': ['gantt']});
-        google.charts.setOnLoadCallback(Charts);
+        google.charts.setOnLoadCallback(InitCharts);
         
-        function Charts() {
+        function InitCharts() {
         <!-- calls the function called 'loadrecords' in googlegantchart controller-->
             googlegantchart.loadrecords(
             <!-- following the usual remoting syntax-->
