@@ -1,0 +1,12 @@
+<apex:page controller="DynamicController">
+ <apex:form >
+ <h> Select any Representative</h>
+  <apex:selectList multiselect="false" value="{!RepName}" size="1">
+  <apex:actionSupport event="onchange" action="{!changeOwer}"/>
+      <apex:selectOption itemLabel="--None--" itemValue="--None--"/>
+      <apex:selectOption itemLabel="Alex" itemValue="Alex"/>
+      <apex:selectOption itemLabel="Shar" itemValue="Shar"/>
+      <apex:selectOption itemLabel="Satish Lokin" itemValue="Satish lokin"/>
+   </apex:selectList>
+ </apex:form> 
+</apex:page>
