@@ -43,9 +43,9 @@ public with sharing class ImportRecordsUtility {
     public static void getAllFiles() {
 
         String fileExtension;
-        list accList = [SELECT ID, Name FROM Account];
+        list<Account> accList = [SELECT ID, Name FROM Account];
         system.debug('#### all accounts '+accList);
-        list accIDList = new list();
+        list<ID> accIDList = new list<ID>();
         for(Account tempAcc : accList)
             accIDList.add(tempAcc.ID);
         attachmentList = [SELECT ID, Name, Body, BodyLength, ContentType, IsPrivate, ParentId FROM Attachment WHERE ParentId IN: accIDList];
@@ -105,7 +105,6 @@ public with sharing class ImportRecordsUtility {
                 
                 objects.add(thisObj);
             }
-            
         }
         
         return objects;
@@ -123,7 +122,6 @@ public with sharing class ImportRecordsUtility {
         map<String,Integer> headerAPINumberMap = new map<String,Integer>();
         
 
-        map<String,String> colAPIMap = new map<String,String>();
         list<Import_Column_API_Mapping__c> colAPIMapList = [ SELECT Name, Column_Name__c, Column_API_Name__c FROM Import_Column_API_Mapping__c ];
         for(Import_Column_API_Mapping__c tempColAPIMap : colAPIMapList) {
             colAPIMap.put(tempColAPIMap.Column_Name__c,tempColAPIMap.Column_API_Name__c);
