@@ -2,42 +2,42 @@
     @ Apex Class  : ImportRecordsUtility
     @ Description : This utility class is used to create records from uploaded CSV files
     @ Created Date: December 27, 2016
-    @ Author      : Souravmoy Gorai
+    @ Author      : Souravmoy Gorai            
 ***********************************************************************/
 
 public with sharing class ImportRecordsUtility {
-
+    
     public static String objectName;
     public static String FFName;
-    public static list filesList;
-    public static list sObjectRecordList;
-    public static list attachmentList;
-    public static set fieldNamesSet;
-    public static map fieldNumberMap;
-    public static map headerAPIMap;
-
+    public static list<BLOB> filesList;
+    public static list<sObject> sObjectRecordList;
+    public static list<Attachment> attachmentList;
+    public static set<String> fieldNamesSet;
+    public static map<String, Integer> fieldNumberMap;
+    public static map<String, Integer> headerAPIMap;
+    
     // CONSTRUCTOR
-    public static list ImportRecords(String objectType, String fileFormat) {
+    public static list<sObject> ImportRecords(String objectType, String fileFormat) {
         objectName = objectType;
         FFName = fileFormat;
-        filesList = new list();
-        sObjectRecordList = new list();
-        attachmentList = new list();
-        fieldNamesSet = new set();
-        fieldNumberMap = new map();
-        headerAPIMap = new map();
-
-        getAllFiles();                          // get all CSV files from Account record
+        filesList = new list<BLOB>();
+        sObjectRecordList = new list<sObject>();
+        attachmentList = new list<Attachment>();
+        fieldNamesSet = new set<String>();
+        fieldNumberMap = new map<String, Integer>();
+        headerAPIMap = new map<String,Integer>();
+        
+        getAllFiles();                          // get all CSV files from Distributor record
         sObjectRecordList = readFiles();        // read the CSV files
-
+        
         system.debug('######### '+sObjectRecordList);
         return sObjectRecordList;
     }
-
+    
     /**********************************************************
      * Method Name  :   getAllFiles
-     * Description  :   This method get all the CSV files from
-     *                  Account record(for now)
+     * Description  :   This method get all the CSV files from 
+     *                  Distributor record(for now)
      * Return type  :   void
      **********************************************************/
     public static void getAllFiles() {
@@ -58,26 +58,27 @@ public with sharing class ImportRecordsUtility {
             }
         }
     }
-
+    
     /**********************************************************
      * Method Name  :   readFiles
      * Description  :   This method reads all the CSV files
      * Return type  :   void
      **********************************************************/
-    public static list readFiles() {
-
+    public static list<sObject> readFiles() {
+        
         Schema.sObjectType objectDef = Schema.getGlobalDescribe().get(objectName).getDescribe().getSObjectType();
-        list objects = new list();
-
+        system.debug(objectDef);
+        list<sObject> objects = new list<sObject>();
+        
         String fileToString;
         String[] headerFieldNames;                          // contains the Header field names
         String[] lineValues;                                // each data cell
-        list lines          = new list();   // for single CSV file
-        list allLinesList   = new list();   // all lines combined of all CSV files
+        list<String> lines          = new list<String>();   // for single CSV file
+        list<String> allLinesList   = new list<String>();   // all lines combined of all CSV files
         for(BLOB tempBlob : filesList) {
             fileToString = tempBlob.toString();
             system.debug('#### file '+fileToString);
-
+            
             lines = fileToString.split('\r');               // using carriage return accomodates windows, unix, and mac files
             system.debug('#### lines '+lines);
             headerFieldNames = lines[0].split(',');
@@ -86,14 +87,14 @@ public with sharing class ImportRecordsUtility {
                 fieldNumberMap.put(headerFieldNames[i], i);
                 fieldNamesSet.add(headerFieldNames[i].trim());
             }
-
+            
             headerAPIMap = getHeaderAPINames(fieldNumberMap);
             system.debug('#### new API map '+headerAPIMap);
-
+            
             for(Integer i=1; i< lines.size(); i++) {
                 // Skip blank CSV lines (only commas)
                 if (lines[i].replaceAll(',','').trim().length() == 0) break;
-
+                
                 sObject thisObj = objectDef.newSobject();
                 lineValues = lines[i].split(',');
                 for(String tempFieldAPIName : headerAPIMap.keySet()) {
@@ -101,29 +102,35 @@ public with sharing class ImportRecordsUtility {
                     String fieldValue = lineValues[fieldNumber];
                     thisObj.put(tempFieldAPIName,fieldValue.trim());
                 }
-
+                
                 objects.add(thisObj);
             }
-
+            
         }
-
+        
         return objects;
     }
-
+    
     /**********************************************************
      * Method Name  :   getHeaderAPINames
      * Description  :   This method gets the field API names for the header values
-     * Return type  :   map
+     * Return type  :   map<String, Integer>
      **********************************************************/
-    public static map getHeaderAPINames(map headerMap) {
-        list fileFormatList = FileFormatService.getFileFormatByName('Product Hierarchy');
-        list uploadFileColList = new list();
-        map colAPIMap = ColumnAPIMappingService.getColAPIMappingCS();
-        map headerAPINumberMap = new map();
+    public static map<String,Integer> getHeaderAPINames(map<String,Integer> headerMap) {
+        ID fileFormatID = [SELECT ID, Name FROM File_Format__c WHERE Name =: FFName].ID;
+        list<Upload_File_Column__c> uploadFileColList = new list<Upload_File_Column__c>();
+        map<String,String> colAPIMap = new map<String,String>();
+        map<String,Integer> headerAPINumberMap = new map<String,Integer>();
+        
 
-        for(File_Format__c tempFF : fileFormatList) {
-            uploadFileColList = UploadFileColumnService.getUploadFileColumnByFileFormatID(tempFF.ID);
+        map<String,String> colAPIMap = new map<String,String>();
+        list<Import_Column_API_Mapping__c> colAPIMapList = [ SELECT Name, Column_Name__c, Column_API_Name__c FROM Import_Column_API_Mapping__c ];
+        for(Import_Column_API_Mapping__c tempColAPIMap : colAPIMapList) {
+            colAPIMap.put(tempColAPIMap.Column_Name__c,tempColAPIMap.Column_API_Name__c);
         }
+
+        uploadFileColList = [ SELECT ID, Name, File_Format__c, Column_Name__c, Column_Number__c, Column_Field_Name__c FROM Upload_File_Column__c WHERE File_Format__c =: fileFormatID];
+
         if(uploadFileColList.size() > 0) {
             for(Upload_File_Column__c tempUFCol : uploadFileColList) {
                 for(String tempHdr : headerMap.keySet()) {
@@ -140,5 +147,5 @@ public with sharing class ImportRecordsUtility {
         }
         return headerAPINumberMap;
     }
-
+    
 }
