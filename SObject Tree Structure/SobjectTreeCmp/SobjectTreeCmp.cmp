@@ -1,0 +1,63 @@
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes" controller="SobjectsTreeCompController">
+    
+    <!-- Loading SLDS Static resource -->
+    <ltng:require styles="{!$Resource.DF16HACK3 +'/assets/styles/salesforce-lightning-design-system.css'}"/>
+    
+    <!-- Attributes declaration-->
+    <aura:attribute name="ListOfSObjectNames" type="SObjectTreeWrpClass[]"/>
+    <aura:attribute name="SObjectList" type="SObjectTreeWrpClass"/>
+    <aura:attribute name="SObjectList1" type="Object[]"/>
+    <aura:attribute name="SObjectLabel" type="String"/>
+    <aura:attribute name="selectedObject" type="String" />
+    <aura:attribute name="selectedObjectname" type="String"/>
+    <aura:attribute name="IsParentRecords" type="Boolean" default="False"/>
+    <aura:attribute name="ErrorMessage" type="String" default=""/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <!-- Page Starts -->
+    <div class="slds">
+        <div aura:id="alert-id" class="showHide">
+            <span style="color:red">
+                {!v.ErrorMessage}
+            </span>
+            <br /><br />
+        </div>
+        <div class="slds-page-header">
+            <div class="slds-col slds-has-flexi-truncate">
+                <p class="slds-text-heading--label">Objects</p>
+                <div class="slds-grid">
+                    <div class="slds-grid slds-type-focus slds-no-space">
+                        <h1 class="slds-text-heading--medium slds-truncate" title="Object Hierarchy">Object Hierarchy</h1>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="slds-has-divider--bottom" style="padding-bottom:20px">
+                <div aura:id="InputMain" class="slds-form-element slds-is-required slds-col slds-size--1-of-1 slds-medium-size--5-of-12 slds-large-size--1-of-3 visibilityNO">
+                    <label class="slds-form-element__label" for="selection">Select Object</label>
+                    <div class="slds-form-element__control">
+                        <div class="slds-select_container">
+                            <ui:inputSelect aura:id="selection" class="slds-select slds-is-required" value="{!v.selectedObject}">
+                                <ui:inputSelectOption text="None" label="None" />
+                                <aura:iteration items="{!v.ListOfSObjectNames}" var="level">
+                                    <ui:inputSelectOption text="{!level.APIName+'///'+level.LabelName}" label="{!level.APIName}" />
+                                </aura:iteration>
+                            </ui:inputSelect>
+                        </div>
+                        <br />
+                    </div>
+                </div>
+                <div class="slds-x-small-buttons--horizontal">
+                    <ui:button buttonTitle="Click to see records" class="slds-button slds-button--brand" label="Get Records" press="{!c.getObjectRecords}"/>
+                </div>
+            </div>
+            <table class="slds-table slds-table--bordered slds-table--cell-buffer slds-scrollable--x" style="padding-top:20px">
+                <tbody>
+                    {!v.body}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Page Ends -->
+</aura:component>

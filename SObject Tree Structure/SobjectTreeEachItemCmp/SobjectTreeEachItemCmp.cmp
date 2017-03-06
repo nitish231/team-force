@@ -1,0 +1,43 @@
+<aura:component access="global" implements="force:appHostable,flexipage:availableForAllPageTypes" controller="SobjectsTreeCompController">
+    <!-- Start attribute declaration -->
+    <aura:attribute name="ListOfRecords" type="Object"/>
+    <aura:attribute name="SObjectAPIName" type="String"/>
+    <aura:attribute name="SObjectLabel" type="String"/>
+    <aura:attribute name="ChildRecordsPresented" type="Boolean" default="false"/>
+    <aura:attribute name="IsParentRecords" type="Boolean" default="false"/>
+    <aura:attribute name="SObjectChildList" type="SObjectTreeWrpClass"/>
+    <aura:attribute name="ext" type="String" default="plus" />
+    <!-- End attribute declaration -->
+    <tr>
+        <td>
+            {!v.ListOfRecords.ChildObjectLabel}
+            <ui:button aura:id="{!v.SObjectAPIName}" class="slds-button slds-button--icon-bare buttonIcon" press="{!c.showHidePanel}">
+                <aura:if isTrue="{!v.ext=='plus'}">
+                    <c:svg ariaHidden="true" class="slds-button__icon svgIcon" xlinkHref="/resource/DF16HACK3/assets/icons/utility-sprite/svg/symbols.svg#chevronright">
+                    </c:svg>
+                    <aura:set attribute="else">
+                        <c:svg ariaHidden="true" class="slds-button__icon svgIcon" xlinkHref="/resource/DF16HACK3/assets/icons/utility-sprite/svg/symbols.svg#chevrondown">
+                        </c:svg>
+                    </aura:set>
+                </aura:if>
+            </ui:button>         
+            <a onclick="{!c.navigateToRecord}">{!v.ListOfRecords.Name}</a>
+            <a onclick="{!c.navigateToRecord}">
+                {!v.ListOfRecords.ChildRecordsList.Name}
+            </a>
+            <br/>
+            <aura:if isTrue="{!v.ext=='minus'}">
+                <aura:if isTrue="{!v.SObjectChildList.hasChildRecords}">
+                    {!v.body}
+                    <aura:set attribute="else">
+                        <div style="color:red;">
+                            {!$Label.c.TreeStructureMessage}
+                        </div>
+                    </aura:set>
+                </aura:if>
+            </aura:if>
+        </td>
+    </tr>
+    <tr>
+    </tr>
+</aura:component>

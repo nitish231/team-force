@@ -1,0 +1,12 @@
+<aura:component >
+    <!-- Start attribute declaration -->
+    <aura:attribute name="objectDetails" type="Object[]"/>
+    <aura:attribute name="objectAPIName" type="String"/>
+    <aura:attribute name="objectLabel" type="String"/>
+    <aura:attribute name="ChildRecordsPresent" type="Boolean" default="false"/>
+    <aura:attribute name="IsParentRecords" type="Boolean" default="false"/>
+    <!-- End attribute declaration -->
+    <aura:iteration items="{!v.objectDetails}" var="child">
+        <c:SobjectTreeEachItemCmp ListOfRecords="{!child}" ChildRecordsPresented="{!v.ChildRecordsPresent}" SObjectAPIName="{!v.objectAPIName}" SObjectLabel="{!v.objectLabel}" IsParentRecords="{!v.IsParentRecords}"/>
+    </aura:iteration>
+</aura:component>
