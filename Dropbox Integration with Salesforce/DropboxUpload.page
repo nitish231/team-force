@@ -1,0 +1,14 @@
+<apex:page controller="DropboxUploadController">
+    <apex:pageMessages />
+  <apex:form id="myForm">
+      <apex:commandButton id="login" action="{!getAuthorizationCode}" value="Dropbox login" rendered="{! !connected}"/>
+      <apex:outputPanel rendered="{!connected}">Dropbox is connected to {!username}'s account</apex:outputPanel>
+      <br/><br/>
+      <apex:outputPanel rendered="{!connected}">
+          <apex:inputFile id="file" value="{!fileBody}" filename="{!fileName}"></apex:inputFile>
+          <apex:commandButton action="{!uploadFiles}" value="Upload"/>
+          <br/><br/>
+          <apex:outputText rendered="{!success}">Successfully uploaded to Dropbox!</apex:outputText>
+      </apex:outputPanel>
+  </apex:form>
+</apex:page>
