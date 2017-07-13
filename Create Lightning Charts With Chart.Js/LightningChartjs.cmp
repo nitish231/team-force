@@ -1,0 +1,17 @@
+<aura:component controller="ChartController" implements="flexipage:availableForAllPageTypes" access="global">
+    <aura:attribute name="sObj" type="String" default=""/>
+	<aura:attribute name="field" type="String" default=""/>
+    <aura:attribute name="Charttype" type="String" default=""/>
+    <aura:attribute name="picklistvalues" type="String[]"/>
+    <ltng:require scripts="{!$Resource.Chart_bundle_min_js}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doinit}"/>
+    <div class="container">
+        <!-- Doughnut Chart -->
+        <div class="chart-demo">
+            <h2 class="title">Chart.Js</h2>
+            <div>
+                <canvas class="myCanvas" id="doughnutChart" width="100" height="100"></canvas>
+            </div>
+        </div>
+    </div>
+</aura:component>
