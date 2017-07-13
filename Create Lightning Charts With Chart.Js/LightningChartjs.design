@@ -1,0 +1,5 @@
+<design:component >
+	<design:attribute name="sObj" label="sObject" description="The Object that contains your field to update"/>
+    <design:attribute name="field" label="Field To Check" description="The field you want you display"/>
+    <design:attribute name="Charttype" label="Type Of Chart" description="Chart type which you want to display"/>
+</design:component>
